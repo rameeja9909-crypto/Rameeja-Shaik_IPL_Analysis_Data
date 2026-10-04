@@ -1,0 +1,37 @@
+# Data Cleaning
+import pandas as pd
+import numpy as np
+
+# Load the IPL dataset using Pandas
+df = pd.read_csv("IPL_Cleaned.csv")
+# 8. Check Data Types
+print(df.dtypes)
+
+# 9. Basic Statistical Information
+print(df.describe())
+
+# 10. Missing Values
+print(df.isnull().sum())
+
+# 11. Duplicate Records
+print("Duplicate Rows:", df.duplicated().sum())
+
+# 12. Remove Duplicate Records
+df.drop_duplicates(inplace=True)
+
+# 13. Unique Values
+print(df['Winner'].unique())
+print(df['Venue'].unique())
+
+# 14. Identify Inconsistent Team Names
+print(df['Team1'].unique())
+
+# 15. Handle Missing Values
+df.fillna("Unknown", inplace=True)
+
+# 16. Convert Date Column
+df['Match_Date'] = pd.to_datetime(df['Match_Date'])
+
+# 17. Verify Cleaned Dataset
+print(df.info())
+

@@ -1,0 +1,295 @@
+# Data Analysis
+# ==================================================
+# PART 3 – DATA ANALYSIS USING PANDAS & NUMPY
+# ==================================================
+
+import pandas as pd
+import numpy as np
+
+# 2. Load the IPL dataset using Pandas
+df = pd.read_csv("IPL_Cleaned.csv")
+
+# 18. Total Number of Matches
+total_matches = df['Match_ID'].nunique()
+print("Total Matches:", total_matches)
+
+# 19. Matches Played in Each Season
+matches_per_season = df.groupby('Season')['Match_ID'].nunique()
+print("\nMatches Per Season:")
+print(matches_per_season)
+
+# 20. Matches Won by Each Team
+team_wins = df[['Match_ID', 'Winner']].drop_duplicates()['Winner'].value_counts()
+print("\nMatches Won by Each Team:")
+print(team_wins)
+
+# 21. Team with Highest Number of Wins
+highest_wins_team = team_wins.idxmax()
+print("\nTeam with Highest Wins:", highest_wins_team)
+
+# 22. Team with Lowest Number of Wins
+lowest_wins_team = team_wins.idxmin()
+print("Team with Lowest Wins:", lowest_wins_team)
+
+# 23. Most Successful Player of the Match
+player_of_match = df[['Match_ID', 'Player_of_Match']].drop_duplicates()
+best_player = player_of_match['Player_of_Match'].value_counts().idxmax()
+print("\nMost Successful Player of the Match:", best_player)
+
+# 24. Most Frequently Used Venue
+venue_count = df[['Match_ID', 'Venue']].drop_duplicates()
+most_used_venue = venue_count['Venue'].value_counts().idxmax()
+print("Most Frequently Used Venue:", most_used_venue)
+
+# 25. Analyze Toss Decisions
+toss_decisions = df[['Match_ID', 'Toss_Decision']].drop_duplicates()
+print("\nToss Decision Analysis:")
+print(toss_decisions['Toss_Decision'].value_counts())
+
+# 26. Percentage of Matches Won After Winning Toss
+matches_unique = df[['Match_ID','Toss_Winner','Winner']].drop_duplicates()
+
+toss_match_wins = matches_unique[
+    matches_unique['Toss_Winner'] == matches_unique['Winner']
+]
+
+percentage = (len(toss_match_wins) / len(matches_unique)) * 100
+
+print("\nPercentage Won After Winning Toss:")
+print(round(percentage, 2), "%")
+
+# 27. Highest Winning Margin by Runs
+highest_runs_margin = df[['Match_ID','Win_By_Runs']].drop_duplicates()['Win_By_Runs'].max()
+
+print("\nHighest Winning Margin By Runs:")
+print(highest_runs_margin)
+
+# 28. Highest Winning Margin by Wickets
+highest_wickets_margin = df[['Match_ID','Win_By_Wickets']].drop_duplicates()['Win_By_Wickets'].max()
+
+print("Highest Winning Margin By Wickets:")
+print(highest_wickets_margin)
+
+# 29. Highest Individual Run Scorer
+batsman_runs = df.groupby('Batsman')['Runs_Scored'].sum()
+
+highest_run_scorer = batsman_runs.idxmax()
+
+print("\nHighest Individual Run Scorer:")
+print(highest_run_scorer)
+
+# 30. Highest Number of Wickets Taken
+bowler_wickets = df.groupby('Bowler')['Wickets'].sum()
+
+highest_wicket_taker = bowler_wickets.idxmax()
+
+print("\nHighest Wicket Taker:")
+print(highest_wicket_taker)
+
+# 31. Top 10 Batsmen Based on Total Runs
+top10_batsmen = batsman_runs.sort_values(ascending=False).head(10)
+
+print("\nTop 10 Batsmen:")
+print(top10_batsmen)
+
+# 32. Top 10 Bowlers Based on Wickets
+top10_bowlers = bowler_wickets.sort_values(ascending=False).head(10)
+
+print("\nTop 10 Bowlers:")
+print(top10_bowlers)
+
+# 33. Season-wise Total Runs
+season_runs = df.groupby('Season')['Total_Runs'].sum()
+
+print("\nSeason-wise Total Runs:")
+print(season_runs)
+
+# 34. Season-wise Total Wickets
+season_wickets = df.groupby('Season')['Wickets'].sum()
+
+print("\nSeason-wise Total Wickets:")
+print(season_wickets)
+
+# 35. Average Runs Per Match
+avg_runs_per_match = (
+    df['Total_Runs'].sum() /
+    df['Match_ID'].nunique()
+)
+
+print("\nAverage Runs Per Match:")
+print(round(avg_runs_per_match, 2))
+
+# 36. Team-wise Average Runs
+team_avg_runs = df.groupby('Batting_Team')['Total_Runs'].mean()
+
+print("\nTeam-wise Average Runs:")
+print(team_avg_runs)
+
+# 37. Season-wise Team Performance
+season_team_performance = (
+    df[['Season','Match_ID','Winner']]
+    .drop_duplicates()
+    .groupby(['Season','Winner'])
+    .size()
+    .reset_index(name='Wins')
+)
+
+print("\nSeason-wise Team Performance:")
+print(season_team_performance)
+
+# 38. Most Successful Venue for Each Team
+
+team_venue_wins = (
+    df[['Match_ID','Winner','Venue']]
+    .drop_duplicates()
+    .groupby(['Winner','Venue'])
+    .size()
+    .reset_index(name='Wins')
+)
+
+successful_venue = team_venue_wins.loc[
+    team_venue_wins.groupby('Winner')['Wins'].idxmax()
+]
+
+print("\nMost Successful Venue For Each Team:")
+print(successful_venue)
+# ==================================================
+# 39. Relationship Between Toss Outcome and Match Result
+# ==================================================
+
+matches_unique = df[
+    ['Match_ID', 'Toss_Winner', 'Winner']
+].drop_duplicates()
+
+# Create a new column
+matches_unique['Won_After_Winning_Toss'] = (
+    matches_unique['Toss_Winner']
+    == matches_unique['Winner']
+)
+
+toss_result_analysis = matches_unique[
+    'Won_After_Winning_Toss'
+].value_counts()
+
+print("\nRelationship Between Toss Outcome and Match Result:")
+print(toss_result_analysis)
+
+# Percentage
+
+toss_win_percentage = (
+    toss_result_analysis[True]
+    / len(matches_unique)
+) * 100
+
+print("\nPercentage of Matches Won After Winning Toss:")
+print(round(toss_win_percentage, 2), "%")
+
+# Team-wise Toss Impact
+
+# Team-wise Toss Impact
+
+team_toss_impact = (
+    matches_unique
+    .groupby('Toss_Winner')['Won_After_Winning_Toss']
+    .mean()
+    .mul(100)
+    .reset_index(name='Toss_Win_Percentage')
+)
+
+print("\nTeam-wise Toss Advantage:")
+print(
+    team_toss_impact.sort_values(
+        by='Toss_Win_Percentage',
+        ascending=False
+    )
+)
+
+
+# ==================================================
+# 40. Major Performance Trends in IPL
+# ==================================================
+
+print("\n========== IPL PERFORMANCE TRENDS ==========")
+
+# Trend 1: Season-wise Runs
+
+season_runs = df.groupby(
+    'Season'
+)['Total_Runs'].sum()
+
+print("\nSeason-wise Total Runs:")
+print(season_runs)
+
+if season_runs.iloc[-1] > season_runs.iloc[0]:
+    print("\nTrend: Overall scoring has increased across seasons.")
+else:
+    print("\nTrend: Overall scoring has decreased across seasons.")
+
+# Trend 2: Season-wise Wickets
+
+season_wickets = df.groupby(
+    'Season'
+)['Wickets'].sum()
+
+print("\nSeason-wise Total Wickets:")
+print(season_wickets)
+
+# Trend 3: Most Dominant Teams
+
+team_wins = df[
+    ['Match_ID', 'Winner']
+].drop_duplicates()['Winner'].value_counts()
+
+print("\nTop Performing Teams:")
+print(team_wins.head(5))
+
+# Trend 4: Most Consistent Batsmen
+
+top_batsmen = df.groupby(
+    'Batsman'
+)['Runs_Scored'].sum().sort_values(
+    ascending=False
+).head(5)
+
+print("\nTop Run Scorers:")
+print(top_batsmen)
+
+# Trend 5: Most Successful Bowlers
+
+top_bowlers = df.groupby(
+    'Bowler'
+)['Wickets'].sum().sort_values(
+    ascending=False
+).head(5)
+
+print("\nTop Wicket Takers:")
+print(top_bowlers)
+
+# Trend 6: Toss Decision Trend
+
+toss_decision_trend = df[
+    ['Match_ID', 'Toss_Decision']
+].drop_duplicates()['Toss_Decision'].value_counts()
+
+print("\nToss Decision Trend:")
+print(toss_decision_trend)
+
+# Trend 7: Venue Trend
+
+venue_trend = df[
+    ['Match_ID', 'Venue']
+].drop_duplicates()['Venue'].value_counts().head(5)
+
+print("\nMost Popular Venues:")
+print(venue_trend)
+
+# Trend 8: Player of Match Trend
+
+pom_trend = df[
+    ['Match_ID','Player_of_Match']
+].drop_duplicates()['Player_of_Match'].value_counts().head(5)
+
+print("\nMost Successful Players:")
+print(pom_trend)
+
+print("\n========== END OF TREND ANALYSIS ==========")
